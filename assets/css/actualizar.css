@@ -1,0 +1,14 @@
+#importador_import {
+    background: #fff;
+    border: 1px solid #dadada;
+    padding: 8px 20px 0;
+}
+#importador_import p.submit {
+    padding-top: 0;
+}
+#importador_review {
+    margin-top: 30px;
+}
+#importador_review table {
+    margin-bottom: 30px;
+}
