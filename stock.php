@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Butrich - Actualizar Stock
-Description: Módulo para actualizar el stock
+Description: Módulo para actualizar el stock.
 Version: 1.0
 Author: César Aquino Maximiliano
 Author URI: http://cesar.pe
