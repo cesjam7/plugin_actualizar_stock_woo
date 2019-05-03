@@ -118,12 +118,14 @@ class Stock {
     		$tiene_stock = false;
     		$handle = new WC_Product_Variable($idproduct);
     		$variations = $handle->get_children();
+            // $id_hijos = array();
     		if ($variations) {
     			foreach ($variations as $value) {
     				$single_variation=new WC_Product_Variation($value);
     				$idvariable = $single_variation->get_variation_id();
-    				$stock = get_post_meta($idvariable, '_stock', true);
-    				if ($stock > 0) {
+    				$stock = intval(get_post_meta($idvariable, '_stock', true));
+                    // array_push($id_hijos, $status.'-'.$idvariable.'------');
+    				if ($stock >= 1) {
     					$tiene_stock = true;
     					update_post_meta($idvariable, '_stock_status', 'instock');
     				} else {
@@ -131,12 +133,13 @@ class Stock {
     				}
     			}
     		}
-    		if ($tiene_stock) {
-    			update_post_meta($idproduct, '_stock_status', 'instock');
-    		} else {
+            if ($tiene_stock) {
+                // echo '<br>'.implode('&', $id_hijos).get_the_title($idproduct);
+                update_post_meta($idproduct, '_stock_status', 'instock');
+            } else {
                 $ss++;
-    			update_post_meta($idproduct, '_stock_status', 'outofstock');
-    		}
+                update_post_meta($idproduct, '_stock_status', 'outofstock');
+            }
     	};
         echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "sin stock"';
 
