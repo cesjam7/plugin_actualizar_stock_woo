@@ -132,14 +132,14 @@ class Stock {
     					update_post_meta($idvariable, '_stock_status', 'outofstock');
     				}
     			}
+                if ($tiene_stock) {
+                    // echo '<br>'.implode('&', $id_hijos).get_the_title($idproduct);
+                    update_post_meta($idproduct, '_stock_status', 'instock');
+                } else {
+                    $ss++;
+                    update_post_meta($idproduct, '_stock_status', 'outofstock');
+                }
     		}
-            if ($tiene_stock) {
-                // echo '<br>'.implode('&', $id_hijos).get_the_title($idproduct);
-                update_post_meta($idproduct, '_stock_status', 'instock');
-            } else {
-                $ss++;
-                update_post_meta($idproduct, '_stock_status', 'outofstock');
-            }
     	};
         echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "sin stock"';
 
