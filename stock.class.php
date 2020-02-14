@@ -117,6 +117,9 @@ class Stock {
     		$idproduct = get_the_id();
     		$tiene_stock = false;
     		$handle = new WC_Product_Variable($idproduct);
+            // $categories = wp_get_post_terms(get_the_id(), 'product_cat');
+            // echo '<hr>';
+            // print_r($categories);
     		$variations = $handle->get_children();
             // $id_hijos = array();
     		if ($variations) {
@@ -124,6 +127,14 @@ class Stock {
     				$single_variation=new WC_Product_Variation($value);
     				$idvariable = $single_variation->get_variation_id();
     				$stock = intval(get_post_meta($idvariable, '_stock', true));
+                    // if ($categories) {
+                    //     foreach ($categories as $cat) {
+                    //         if ($cat->parent > 0) {
+                    //             update_post_meta($idvariable, 'taxonomy_product_cat', $cat->slug);
+                    //             echo 'actualizado a la variacion '.$idvariable.' la categoria '.$cat->slug;
+                    //         }
+                    //     }
+                    // }
                     // array_push($id_hijos, $status.'-'.$idvariable.'------');
     				if ($stock >= 1) {
     					$tiene_stock = true;

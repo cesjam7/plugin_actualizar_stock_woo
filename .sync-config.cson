@@ -1,6 +1,6 @@
 # PRODUCCION
 remote:
-    host: "68.183.153.216"        # server name or ip or ssh host abbr in .ssh/config
+    host: "butrich.com"        # server name or ip or ssh host abbr in .ssh/config
     user: "root"        # ssh username
     path: "/var/www/html/wp-content/plugins/butrich-stock/"      # e.g. /home/someone/somewhere
     port: "22"
