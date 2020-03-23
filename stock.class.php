@@ -6,6 +6,7 @@ class Stock {
         add_action( 'admin_enqueue_scripts', array($this, 'admin_assets') );
         add_action( 'wp_ajax_actualizar_stock', array($this, 'ajax_actualizar_stock') );
         add_action( 'wp_ajax_revisar_sin_stock', array($this, 'ajax_revisar_sin_stock') );
+        add_action( 'wp_ajax_revisar_sale', array($this, 'ajax_revisar_sale') );
     }
 
     function admin_assets() {
@@ -24,6 +25,14 @@ class Stock {
             'manage_options',
             'actualizar-stock',
             array($this, 'page_options')
+        );
+        add_submenu_page(
+            'tools.php',
+            __( 'Revisar ofertas', 'actualizar_stock' ),
+            __( 'Revisar ofertas', 'actualizar_stock' ),
+            'manage_options',
+            'actualizar-sale',
+            array($this, 'page_options_sale')
         );
     }
 
@@ -153,6 +162,63 @@ class Stock {
     		}
     	};
         echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "sin stock"';
+
+        exit();
+    }
+
+    function page_options_sale() { ?>
+        <p>&nbsp;</p>
+        <h1><?php _e( 'Actualizar productos en oferta', 'actualizar_stock' ) ?></h1>
+        <p>
+            <input type="hidden" id="revisar_ajaxurl" value="<?php echo admin_url('admin-ajax.php'); ?>" />
+            <button type="button" id="revisar_sale" class="button button-primary"><?php _e('Revisar productos en oferta', 'butrich'); ?></button>
+        </p>
+        <div id="actualizar_sinstock_done"></div>
+        <div id="actualizar_stock_done"></div>
+    <?php }
+
+    function ajax_revisar_sale(){
+
+        $productos = new WP_Query(array(
+    		'post_type' => 'product',
+    		'posts_per_page' => -1
+    	));
+    	$anterior_parent = 1;
+    	$c = 0;
+        $ss = 0;
+    	while ($productos->have_posts()) { $productos->the_post();
+    		$idproduct = get_the_id();
+    		$tiene_sale = false;
+    		$handle = new WC_Product_Variable($idproduct);
+    		$variations = $handle->get_children();
+    		if ($variations) {
+    			foreach ($variations as $value) {
+    				$single_variation=new WC_Product_Variation($value);
+    				$idvariable = $single_variation->get_variation_id();
+    				$sale = floatval(get_post_meta($idvariable, '_sale_price', true));
+                    if ($sale > 0) {
+                        $tiene_sale = $sale;
+                    }
+    			}
+                if ($tiene_sale) {
+                    $ss++;
+                    update_post_meta($idproduct, '_sale_price', $tiene_sale);
+                    $idtranslate = icl_object_id($idproduct, 'product', false, 'en');
+                    update_post_meta($idtranslate, '_sale_price', $tiene_sale);
+                }
+    		}
+    	};
+        global $blog_cache_dir;
+
+        // Execute the Super Cache clearing, taken from original wp_cache_post_edit.php
+        if ( $wp_cache_object_cache ) {
+            reset_oc_version();
+        } else {
+            // Clear the cache. Problem: Due to the combination of different Posts used for the Slider, we have to clear the global Cache. Could result in Performance Issues due to high Server Load while deleting and creating the cache again.
+            prune_super_cache( $blog_cache_dir, true );
+            prune_super_cache( get_supercache_dir(), true );
+        }
+        echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "con oferta"';
 
         exit();
     }

@@ -14,6 +14,21 @@ jQuery(function() {
 
     });
 
+    jQuery('#revisar_sale').on('click', function( e ) {
+        e.preventDefault();
+        jQuery('#actualizar_sinstock_done').html('Revisando productos con ofertas. Puede tardar varios segundos...');
+        jQuery.ajax( {
+            url: jQuery('#revisar_ajaxurl').val(),
+            method: 'POST',
+            data: {
+                action : 'revisar_sale'
+            }
+        }).done(function( data ) {
+            jQuery('#actualizar_sinstock_done').html(data);
+        });
+
+    });
+
     jQuery(document).on('submit', '#actualizar_stock', function( e ) {
         e.preventDefault();
         jQuery('#actualizar_stock_done').html('Obteniendo datos. Puede tardar varios segundos...');
