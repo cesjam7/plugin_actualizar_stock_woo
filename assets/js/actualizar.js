@@ -25,6 +25,8 @@ jQuery(function() {
             }
         }).done(function( data ) {
             jQuery('#actualizar_sinstock_done').html(data);
+        }).fail(function(error) {
+            console.log('ERROR', error)
         });
 
     });

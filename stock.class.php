@@ -178,7 +178,9 @@ class Stock {
     <?php }
 
     function ajax_revisar_sale(){
-
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
         $productos = new WP_Query(array(
     		'post_type' => 'product',
     		'posts_per_page' => -1
@@ -200,23 +202,29 @@ class Stock {
                         $tiene_sale = $sale;
                     }
     			}
+                $idtranslate = icl_object_id($idproduct, 'product', false, 'en');
                 if ($tiene_sale) {
                     $ss++;
                     update_post_meta($idproduct, '_sale_price', $tiene_sale);
-                    $idtranslate = icl_object_id($idproduct, 'product', false, 'en');
                     update_post_meta($idtranslate, '_sale_price', $tiene_sale);
+                    echo '<br>poniendo stock a '.$idtranslate;
+                } else {
+                    update_post_meta($idtranslate, '_sale_price', 0);
+                    echo '<br>quitando stock a '.$idtranslate;
                 }
     		}
     	};
-        global $blog_cache_dir;
 
-        // Execute the Super Cache clearing, taken from original wp_cache_post_edit.php
-        if ( $wp_cache_object_cache ) {
-            reset_oc_version();
-        } else {
-            // Clear the cache. Problem: Due to the combination of different Posts used for the Slider, we have to clear the global Cache. Could result in Performance Issues due to high Server Load while deleting and creating the cache again.
-            prune_super_cache( $blog_cache_dir, true );
-            prune_super_cache( get_supercache_dir(), true );
+        if (function_exists('reset_oc_version')) {
+            global $blog_cache_dir;
+            // Execute the Super Cache clearing, taken from original wp_cache_post_edit.php
+            if ( $wp_cache_object_cache ) {
+                reset_oc_version();
+            } else {
+                // Clear the cache. Problem: Due to the combination of different Posts used for the Slider, we have to clear the global Cache. Could result in Performance Issues due to high Server Load while deleting and creating the cache again.
+                prune_super_cache( $blog_cache_dir, true );
+                prune_super_cache( get_supercache_dir(), true );
+            }
         }
         echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "con oferta"';
 
