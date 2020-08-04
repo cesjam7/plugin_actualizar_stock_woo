@@ -54,7 +54,7 @@ class Stock {
         </form>
         <p>
             <input type="hidden" id="revisar_ajaxurl" value="<?php echo admin_url('admin-ajax.php'); ?>" />
-            <button type="button" id="revisar_sin_stock" class="button button-primary"><?php _e('Revisar productos sin stock', 'importador_usuarios'); ?></button>
+            <button type="button" id="revisar_sin_stock" class="button button-primary"><?php _e('Revisar productos sin stock y sincronizar categorías', 'importador_usuarios'); ?></button>
         </p>
         <div id="actualizar_sinstock_done"></div>
         <div id="actualizar_stock_done"></div>
@@ -126,7 +126,7 @@ class Stock {
     		$idproduct = get_the_id();
     		$tiene_stock = false;
     		$handle = new WC_Product_Variable($idproduct);
-            // $categories = wp_get_post_terms(get_the_id(), 'product_cat');
+            $categories = wp_get_post_terms(get_the_id(), 'product_cat');
             // echo '<hr>';
             // print_r($categories);
     		$variations = $handle->get_children();
@@ -136,14 +136,14 @@ class Stock {
     				$single_variation=new WC_Product_Variation($value);
     				$idvariable = $single_variation->get_variation_id();
     				$stock = intval(get_post_meta($idvariable, '_stock', true));
-                    // if ($categories) {
-                    //     foreach ($categories as $cat) {
-                    //         if ($cat->parent > 0) {
-                    //             update_post_meta($idvariable, 'taxonomy_product_cat', $cat->slug);
-                    //             echo 'actualizado a la variacion '.$idvariable.' la categoria '.$cat->slug;
-                    //         }
-                    //     }
-                    // }
+                    if ($categories) {
+                        foreach ($categories as $cat) {
+                            if ($cat->parent > 0) {
+                                update_post_meta($idvariable, 'taxonomy_product_cat', $cat->slug);
+                                //echo '<br>actualizado a la variacion '.$idvariable.' la categoria '.$cat->slug;
+                            }
+                        }
+                    }
                     // array_push($id_hijos, $status.'-'.$idvariable.'------');
     				if ($stock >= 1) {
     					$tiene_stock = true;
@@ -161,7 +161,7 @@ class Stock {
                 }
     		}
     	};
-        echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "sin stock"';
+        echo 'Terminado de revisar. Se pasaron '.$ss.' productos a "sin stock". También se actualizaron las categorías.';
 
         exit();
     }
