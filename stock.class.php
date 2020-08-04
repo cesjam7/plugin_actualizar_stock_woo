@@ -178,9 +178,9 @@ class Stock {
     <?php }
 
     function ajax_revisar_sale(){
-        ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
-        error_reporting(E_ALL);
+        // ini_set('display_errors', 1);
+        // ini_set('display_startup_errors', 1);
+        // error_reporting(E_ALL);
         $productos = new WP_Query(array(
     		'post_type' => 'product',
     		'posts_per_page' => -1
@@ -197,7 +197,8 @@ class Stock {
     			foreach ($variations as $value) {
     				$single_variation=new WC_Product_Variation($value);
     				$idvariable = $single_variation->get_variation_id();
-    				$sale = floatval(get_post_meta($idvariable, '_sale_price', true));
+                    $sale = floatval(get_post_meta($idvariable, '_sale_price', true));
+    				$international_sale = floatval(get_post_meta($idvariable, '_latinoamerica_sale_price', true));
                     if ($sale > 0) {
                         $tiene_sale = $sale;
                     }
@@ -206,11 +207,22 @@ class Stock {
                 if ($tiene_sale) {
                     $ss++;
                     update_post_meta($idproduct, '_sale_price', $tiene_sale);
+                    update_post_meta($idproduct, '_peru_min_variation_price', $tiene_sale);
+                    update_post_meta($idproduct, '_latinoamerica_min_variation_sale_price', $international_sale);
+                    update_post_meta($idproduct, '_todo-el-mundo_min_variation_sale_price', $international_sale);
+
                     update_post_meta($idtranslate, '_sale_price', $tiene_sale);
-                    echo '<br>poniendo stock a '.$idtranslate;
+                    update_post_meta($idtranslate, '_peru_min_variation_price', $tiene_sale);
+                    update_post_meta($idtranslate, '_latinoamerica_min_variation_sale_price', $international_sale);
+                    update_post_meta($idtranslate, '_todo-el-mundo_min_variation_sale_price', $international_sale);
+
+                    // echo '<br>poniendo stock a '.$idtranslate;
                 } else {
                     update_post_meta($idtranslate, '_sale_price', 0);
-                    echo '<br>quitando stock a '.$idtranslate;
+                    update_post_meta($idtranslate, '_latinoamerica_min_variation_sale_price', 0);
+                    update_post_meta($idtranslate, '_peru_min_variation_price', 0);
+                    update_post_meta($idtranslate, '_todo-el-mundo_min_variation_sale_price', 0);
+                    // echo '<br>quitando stock a '.$idtranslate;
                 }
     		}
     	};
